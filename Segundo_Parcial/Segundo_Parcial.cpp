@@ -12,6 +12,8 @@ void actualizar_puesto();
 void eliminar_puesto();
 void insertar_empleado();
 void mostrar_empleado();
+void actualizar_empleado();
+void eliminar_empleado();
 
 int main()
 {
@@ -23,7 +25,7 @@ int main()
     {
     case 1:
         int p;
-        cout << "Si desea\ninsertar presione 1\n modificar presione 2 \n consultar presione 3 \n eliminar presione 4:";
+        cout << "Si desea\ninsertar presione 1\nmodificar presione 2\nconsultar presione 3\neliminar presione 4:";
         cin >> p;
 
         switch (p)
@@ -43,7 +45,7 @@ int main()
     
     case 2:
         int e;
-        cout << "Si desea\ninsertar presione 1\n modificar presione 2 \n consultar presione 3: ";
+        cout << "Si desea\ninsertar presione 1\nconsultar presione 2 \nmodificar presione 3\neliminar presione 4: ";
         cin >> e;
 
         switch (e)
@@ -52,6 +54,10 @@ int main()
             insertar_empleado(); break;
         case 2:
             mostrar_empleado(); break;
+        case 3:
+            actualizar_empleado(); break;
+        case 4:
+            eliminar_empleado(); break;
         default:
             break;
         }
@@ -60,6 +66,7 @@ int main()
 
 }
 
+//PUESTO
 void insertar_puesto() {
     MYSQL* conectar;
     conectar = mysql_init(0);
@@ -181,6 +188,8 @@ void eliminar_puesto() {
     
 }
 
+//EMPLEADO
+
 void insertar_empleado() {
     string nombre, apellido, direccion, telefono, dpi, fecha_nac, fecha_inicio, fecha_ingreso;
     char genero, idpuesto;
@@ -205,6 +214,13 @@ void insertar_empleado() {
 
     cout << "Ingrese el genero del empleado: ";
     cin >> genero;
+    if (genero == 'M')
+    {
+        genero = 1;
+    } else if (genero == 'F')
+    {
+        genero = 2;
+    }        
 
     cout << "Ingrese la fecha de inicio de nacimiento\n(en formato año-mes-dia): ";
     cin >> fecha_nac;
@@ -267,4 +283,103 @@ void mostrar_empleado() {
         cout << "Conexion fallida..." << endl;
     }
     system("pause");
+}
+
+void actualizar_empleado() {
+    string nombre, apellido, direccion, telefono, dpi, fecha_nac, fecha_inicio, fecha_ingreso;
+    char genero, idpuesto, idempleado;
+
+    cout << "Ingrese id que desea modificar: ";
+    cin >> idempleado;
+
+    cout << "Ingrese el nombre del empleado: ";
+    cin.ignore();
+    getline(cin, nombre);
+
+    cout << "Ingrese los apellidos del empleado: ";
+    cin.ignore();
+    getline(cin, apellido);
+
+    cout << "Ingrese la direccion del empleado: ";
+    cin.ignore();
+    getline(cin, direccion);
+
+    cout << "Ingrese el telefono del empleado: ";
+    cin >> telefono;
+
+    cout << "Ingrese el DPI del empleado: ";
+    cin >> dpi;
+
+    cout << "Ingrese el genero del empleado: ";
+    cin >> genero;
+    if (genero == 'M')
+    {
+        genero = 1;
+    }
+    else if (genero == 'F')
+    {
+        genero = 2;
+    }
+
+    cout << "Ingrese la fecha de inicio de nacimiento\n(en formato año-mes-dia): ";
+    cin >> fecha_nac;
+
+    cout << "Ingrese el id del puesto del empleado: ";
+    cin >> idpuesto;
+
+    cout << "Ingrese la fecha de inicio de labores\n(en formato año-mes-dia): ";
+    cin >> fecha_inicio;
+
+    MYSQL* conectar;
+    conectar = mysql_init(0);
+    conectar = mysql_real_connect(conectar, "localhost", "root", "150289", "db_parcial2", 3306, NULL, 0);
+
+    if (conectar) {
+        string update = "UPDATE `empleados` SET nombres = '" + nombre + "', apellidos = '" + apellido + "', direccion = '" + direccion + "', telefono = '" + telefono + "', dpi = '" + dpi + "', genero = '" + genero + "', fecha_nacimiento = '" + fecha_nac + "', idpuesto = " + idpuesto + ", fecha_inicio_labores = '" + fecha_inicio + "', fechaingreso = NOW() WHERE idempleado = " + idempleado + "\n";
+        const char* i = update.c_str();
+        q_estado = mysql_query(conectar, i);
+
+        if (!q_estado) {
+            cout << "Actualizacion exitoso..." << endl;
+        }
+        else {
+            cout << "Error al actualizar..." << endl;
+            cout << update << endl << mysql_error(conectar) << endl;
+        }
+    }
+    else {
+        cout << "Conexion fallida..." << endl;
+    }
+
+    system("pause");
+}
+
+void eliminar_empleado() {
+    MYSQL* conectar;
+    conectar = mysql_init(0);
+    conectar = mysql_real_connect(conectar, "localhost", "root", "150289", "db_parcial2", 3306, NULL, 0);
+    if (conectar) {
+
+        string idempleado;
+        cout << "Ingrese id que desea eliminar: ";
+        cin >> idempleado;
+
+        string eliminar = "DELETE FROM empleados WHERE idempleado = " + idempleado + "\n";
+        cout << eliminar;
+        const char* i = eliminar.c_str();
+        q_estado = mysql_query(conectar, i);
+
+        if (!q_estado) {
+            cout << "Eliminacion exitosa..." << endl;
+            return;
+        }
+        else {
+            cout << "Error al eliminar..." << endl;
+            cout << eliminar << endl << mysql_error(conectar) << endl;
+        }
+    }
+    else {
+        cout << "Conexion fallida..." << endl;
+    }
+
 }
