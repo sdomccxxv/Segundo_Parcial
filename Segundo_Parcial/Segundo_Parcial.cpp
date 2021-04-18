@@ -365,7 +365,6 @@ void eliminar_empleado() {
         cin >> idempleado;
 
         string eliminar = "DELETE FROM empleados WHERE idempleado = " + idempleado + "\n";
-        cout << eliminar;
         const char* i = eliminar.c_str();
         q_estado = mysql_query(conectar, i);
 
