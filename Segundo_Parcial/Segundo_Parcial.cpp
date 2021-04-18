@@ -10,6 +10,8 @@ void insertar_puesto();
 void mostrar_puesto();
 void actualizar_puesto();
 void eliminar_puesto();
+void insertar_empleado();
+void mostrar_empleado();
 
 int main()
 {
@@ -44,6 +46,16 @@ int main()
         cout << "Si desea\ninsertar presione 1\n modificar presione 2 \n consultar presione 3: ";
         cin >> e;
 
+        switch (e)
+        {
+        case 1: 
+            insertar_empleado(); break;
+        case 2:
+            mostrar_empleado(); break;
+        default:
+            break;
+        }
+        break;
       }
 
 }
@@ -167,4 +179,92 @@ void eliminar_puesto() {
         cout << "Conexion fallida..." << endl;
     }
     
+}
+
+void insertar_empleado() {
+    string nombre, apellido, direccion, telefono, dpi, fecha_nac, fecha_inicio, fecha_ingreso;
+    char genero, idpuesto;
+
+    cout << "Ingrese el nombre del empleado: ";
+    cin.ignore();
+    getline(cin, nombre);
+
+    cout << "Ingrese los apellidos del empleado: ";
+    cin.ignore();
+    getline(cin, apellido);
+
+    cout << "Ingrese la direccion del empleado: ";
+    cin.ignore();
+    getline(cin, direccion);
+
+    cout << "Ingrese el telefono del empleado: ";
+    cin >> telefono;
+
+    cout << "Ingrese el DPI del empleado: ";
+    cin >> dpi;
+
+    cout << "Ingrese el genero del empleado: ";
+    cin >> genero;
+
+    cout << "Ingrese la fecha de inicio de nacimiento\n(en formato año-mes-dia): ";
+    cin >> fecha_nac;
+
+    cout << "Ingrese el id del puesto del empleado: ";
+    cin >> idpuesto;
+
+    cout << "Ingrese la fecha de inicio de labores\n(en formato año-mes-dia): ";
+    cin >> fecha_inicio;
+
+    MYSQL* conectar;
+    conectar = mysql_init(0);
+    conectar = mysql_real_connect(conectar, "localhost", "root", "150289", "db_parcial2", 3306, NULL, 0);
+
+    if (conectar) {
+        string insert = "INSERT INTO `empleados`(`nombres`,`apellidos`,`direccion`,`telefono`,`DPI`,`genero`,`fecha_nacimiento`,`idPuesto`,`fecha_inicio_labores`,`fechaingreso`) VALUES ('" + nombre + "', '" + apellido + "', '" + direccion + "', '" + telefono + "', '" + dpi + "', '" + genero + "', '" + fecha_nac + "', " + idpuesto + ", '" + fecha_inicio + "', NOW())";
+        cout << insert;
+        const char* i = insert.c_str();
+        q_estado = mysql_query(conectar, i);
+
+        if (!q_estado) {
+            cout << "Ingreso exitoso..." << endl;
+        }
+        else {
+            cout << "Error al ingresar..." << endl;
+            cout << insert << endl << mysql_error(conectar) << endl;
+        }
+    }
+    else {
+        cout << "Conexion fallida..." << endl;
+    }
+
+    system("pause");
+}
+
+void mostrar_empleado() {
+    MYSQL* conectar;
+    MYSQL_ROW fila;
+    MYSQL_RES* resultado;
+
+    conectar = mysql_init(0);
+    conectar = mysql_real_connect(conectar, "localhost", "root", "150289", "db_parcial2", 3306, NULL, 0);
+    if (conectar) {
+        string consulta = "SELECT * FROM empleados";
+        const char* c = consulta.c_str();
+        q_estado = mysql_query(conectar, c);
+
+        if (!q_estado) {
+            resultado = mysql_store_result(conectar);
+            while (fila = mysql_fetch_row(resultado)) {
+                cout << fila[0] << " - " << fila[1] << " - " << fila[2] << " - " << fila[3] << " - " << fila[4] << " - " << fila[5] << " - " << fila[6] << " - " << fila[7] << " - " << fila[8] << " - " << fila[9] << " - " << fila[10] << endl;
+            }
+        }
+        else {
+            cout << "Error al consultar..." << endl;
+        }
+
+    }
+    else {
+        cout << "Conexion fallida..." << endl;
+    }
+    system("pause");
 }
